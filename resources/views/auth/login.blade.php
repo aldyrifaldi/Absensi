@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Login - SI Laundry</title>
+    <title>Login - Absensi</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </head>
 <body style="background:#F7F7F7">
@@ -21,19 +21,25 @@
                         <div class="text-center my-3">
                             <img src="https://images.unsplash.com/photo-1511091734515-e50d46c37240?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80" alt="" class="img-fluid rounded-circle" style="width:200px;height:200px">
                         </div>
-                        <form action="" method="post">
+                        <form action="{{route('login')}}" method="post">
                             @csrf
                             <div class="form-group">
                                 <label for="">Username</label>
                                 <input required type="text"
-                                class="form-control" name="username" id="" aria-describedby="helpId" placeholder="Username">
+                                class="form-control @error('username') is-invalid @enderror" name="username" id="" aria-describedby="helpId" placeholder="Username">
                                 <small id="helpId" class="form-text text-muted">Masukkan Username Anda</small>
+                                @error('username')
+                                    <small class="text-danger"> {{$message}} </small>
+                                @enderror
                             </div>
                             <div class="form-group">
                                 <label for="">Password</label>
-                                <input required type="text"
-                                class="form-control" name="password" id="" aria-describedby="helpId" placeholder="Password">
+                                <input required type="password"
+                                class="form-control @error('password') is-invalid @enderror" name="password" id="" aria-describedby="helpId" placeholder="Password">
                                 <small id="helpId" class="form-text text-muted">Masukkan Password Anda</small>
+                                @error('password')
+                                    <small class="text-danger"> {{$message}} </small>
+                                @enderror
                             </div>
                             <button type="submit" class="btn btn-block btn-outline-primary">Login</button>
                         </form>

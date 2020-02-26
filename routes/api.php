@@ -16,3 +16,8 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::resource('absen', 'AbsenController');
+Route::post('jadwal-absensi/store', 'ApiController@inputJadwal');
+Route::post('absensi/create', 'ApiController@absensi');
+Route::get('jadwal-absensi', 'ApiController@jadwalAbsensi');

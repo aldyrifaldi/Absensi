@@ -35,17 +35,20 @@ class ApiController extends Controller
     {
         $kelas = Kelas::leftJoin('jadwal_absensi','jadwal_absensi.id_kelas','=','kelas.id')->select('*','jadwal_absensi.id as id_jadwal','kelas.id as id_kelas')->get();
         $array = [];
-
+        $no = 0;
+        $finish = [];
         foreach ($kelas as $key => $value) {
             $explode = explode(',',$value->nama_hari);
+            $akhir = [];
             foreach ($explode as $k => $example) {
-                $nama_hari[$example] = $example; 
+                $hasil[$example] = $example;
             }
+            array_push($finish,[$hasil]);
             array_push($array,[
                 'nama_kelas' => $value->nama_kelas,
                 'id_kelas' => $value->id_kelas,
                 'id_jadwal' => $value->id_jadwal,
-                'nama_hari' => $nama_hari,
+                'nama_hari' => $finish[$key],
             ]);
         }
 

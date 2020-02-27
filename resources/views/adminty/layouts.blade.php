@@ -242,7 +242,53 @@
     <script>
         $(document).ready(function() {
             $('.datatable').DataTable();
+
+             // update absensi
+            axios({
+                method: 'get',
+                url: '{{url("api/jadwal-absensi")}}',
+            })
+            .then((response) => {
+                    var d = new Date();
+                    var weekday = new Array(7);
+                    weekday[0] = "Sunday";
+                    weekday[1] = "Monday";
+                    weekday[2] = "Tuesday";
+                    weekday[3] = "Wednesday";
+                    weekday[4] = "Thursday";
+                    weekday[5] = "Friday";
+                    weekday[6] = "Saturday";
+
+                    var n = weekday[d.getDay()];
+                    
+                    $.each(response.data,function(index,item){
+                        if (item.nama_hari[0][n] === n) {
+                            buatAbsensi(item.id_kelas)
+                        }
+                        else {
+                        }
+                    })
+            }).catch((err) => {
+                
+            });
+
+
         } );
+
+        function buatAbsensi(id_kelas){
+            var id_kelas = id_kelas;
+            axios({
+                method: 'post',
+                url: '{{url("api/detail-absensi")}}',
+                data: {
+                    id_kelas: id_kelas,
+                }
+            })
+            .then((response) => {
+            }).catch((err) => {
+                
+            });
+        }
     </script>
 </body>
 

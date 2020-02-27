@@ -31,21 +31,21 @@
                     <div class="row">
                         <div class="col-md">
                             <div class="form-group">
+                                <label for="id_kelas">Kelas</label>
+                                <select class="form-control @error('id_kelas') is-invalid @enderror" name="" id="select2">
+                                    <option selected disabled value=" ">== PILIH KELAS ==</option>
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="form-group">
                                 <label for="tanggal_absensi">Tanggal Absensi</label>
                                 <select onchange="tanggalAbsensi()" class="form-control @error('tanggal_absensi') is-invalid @enderror" name="" id="select2">
                                     <option selected disabled value=" ">== PILIH TANGGAL ABSENSI ==</option>
                                     @foreach ($tanggal as $item)
                                         <option value=""></option>
                                     @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md">
-                            <div class="form-group">
-                                <label for="id_kelas">Kelas</label>
-                                <select class="form-control @error('id_kelas') is-invalid @enderror" name="" id="select2">
-                                    <option selected disabled value=" ">== PILIH KELAS ==</option>
-                                    <option value=""></option>
                                 </select>
                             </div>
                         </div>

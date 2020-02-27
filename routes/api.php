@@ -17,6 +17,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::resource('detail-absensi', 'DetailAbsensiController');
 Route::resource('absen', 'AbsenController');
 Route::post('jadwal-absensi/store', 'ApiController@inputJadwal');
 Route::post('absensi/create', 'ApiController@absensi');

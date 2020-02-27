@@ -29,32 +29,34 @@
                 url: '{{url("api/jadwal-absensi")}}',
             })
             .then(response => {
-                var pilihan_hari = ['Monday','Thursday','Wednesday','Tuesday','Friday','Saturday','Sunday'];
+                var pilihan_hari = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
                 $.each(response.data,function(i, item){
                     var option_hari = item
                     
                     pilihan_element = '';
                     
-                    var option = i;
+                    var option = item.id_kelas-1;
                     
                     function pilihanHari(value, index, array){
                         var show = [
                             {
                                 Monday: 'Senin',
-                                Thursday: 'Selasa',
+                                Tuesday: 'Selasa',
                                 Wednesday: 'Rabu',
-                                Tuesday: 'Kamis',
+                                Thursday: 'Kamis',
                                 Friday: 'Jumat',
                                 Saturday: 'Sabtu',
                                 Sunday: 'Ahad',
                             }
                         ];
 
+                        console.log(item.nama_hari[0][value] == value);
+
 
                         var this_element = `
                                             <div class="border-checkbox-group border-checkbox-group-primary">
                                                 <input `+
-                                                    (item.nama_hari[value] === value ? 'checked' : '') 
+                                                    (item.nama_hari[0][value] === value ? 'checked' : '') 
                                                 +
                                                 `   onchange="checkbox(${item.id_kelas})" value="${value}" class="border-checkbox checkbox${item.id_kelas}" name="nama_hari[]" type="checkbox" id="checkbox${index}${item.id_kelas}">
                                                 <label class="border-checkbox-label" for="checkbox${index}${item.id_kelas}">${show.map(e => e[value])}</label>
@@ -100,7 +102,7 @@
                 hari.push($(this).val()); 
             });
             var kelas = kelas;
-
+            console.log(hari);
             axios({
                 method: 'post',
                 url: '{{url("api/jadwal-absensi/store")}}',

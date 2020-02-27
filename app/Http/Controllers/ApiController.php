@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\JadwalAbsensi;
 use App\Kelas;
+use App\DetailAbsensi;
 
 class ApiController extends Controller
 {
@@ -56,6 +57,19 @@ class ApiController extends Controller
         return response()->json($array);
     }
 
+    public function jadwalAbsensiPerKelas($kelas)
+    {
+        $jadwal = DetailAbsensi::where('id_kelas',$kelas)->get();
+        $array = [];
+        foreach ($jadwal as $key => $value) {
+            array_push($array,[
+                'string_tanggal' => date('F, d M Y',strtotime($value->tanggal_absensi)),
+                'format_date' => $value->tanggal_absensi
+            ]);
+        }
+        return response()->json($array);
+    }
+
     public function absensi(Request $request)
     {
         $no_detail = time().Str::random(8);
@@ -68,5 +82,11 @@ class ApiController extends Controller
             return response()->json('Berhasil','Absensi Terbuka');
         }
         return response()->json('Gagal','Absensi Tidak Terbuka');
+    }
+
+
+    public function kelas(){
+        $kelas = Kelas::get();
+        return response()->json($kelas);
     }
 }

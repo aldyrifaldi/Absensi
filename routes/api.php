@@ -22,3 +22,5 @@ Route::resource('absen', 'AbsenController');
 Route::post('jadwal-absensi/store', 'ApiController@inputJadwal');
 Route::post('absensi/create', 'ApiController@absensi');
 Route::get('jadwal-absensi', 'ApiController@jadwalAbsensi');
+Route::get('jadwal-perkelas/{id_kelas}', 'ApiController@jadwalAbsensiPerKelas');
+Route::get('kelas', 'ApiController@kelas');

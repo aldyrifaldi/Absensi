@@ -32,20 +32,14 @@
                         <div class="col-md">
                             <div class="form-group">
                                 <label for="id_kelas">Kelas</label>
-                                <select class="form-control @error('id_kelas') is-invalid @enderror" name="" id="select2">
-                                    <option selected disabled value=" ">== PILIH KELAS ==</option>
-                                    <option value=""></option>
+                                <select onchange="kelas()" class="js-states form-control @error('id_kelas') is-invalid @enderror" name="" id="id_kelas">
                                 </select>
                             </div>
                         </div>
                         <div class="col-md">
                             <div class="form-group">
                                 <label for="tanggal_absensi">Tanggal Absensi</label>
-                                <select onchange="tanggalAbsensi()" class="form-control @error('tanggal_absensi') is-invalid @enderror" name="" id="select2">
-                                    <option selected disabled value=" ">== PILIH TANGGAL ABSENSI ==</option>
-                                    @foreach ($tanggal as $item)
-                                        <option value=""></option>
-                                    @endforeach
+                                <select onchange="tanggalAbsensi()" class="form-control @error('tanggal_absensi') is-invalid @enderror" name="" id="tanggal_absensi">
                                 </select>
                             </div>
                         </div>
@@ -89,7 +83,56 @@
     <script>
         function tanggalAbsensi(){
             var tanggal = $('#tanggal_absensi').val();
-            location.href = "{{url()->current()}}?tg="+tanggal;
+            console.log(tanggal);
+            axios({
+                method: ''
+            })
+        }
+
+        $(document).ready(function(){
+            axios({
+                method: 'get',
+                url: '{{url("api/kelas")}}',
+            })
+            .then(response => {
+                $('#id_kelas').append(`
+                    <option selected disabled value=" ">== PILIH KELAS ==</option>
+                `)
+                $('#tanggal_absensi').append(`
+                    <option selected disabled value=" ">== PILIH TANGGAL ABSENSI ==</option>
+                `)
+
+                var hasil = ''
+                $.each(response.data,function(index,item){
+                    var option = `
+                        <option value="${item.id}">${item.nama_kelas}</option>
+                    `
+
+                    hasil += option
+                })
+
+                $('#id_kelas').append(hasil);
+            })
+        })
+
+        function kelas(){
+            var kelas = $('#id_kelas').val();
+            axios({
+                method: 'get',
+                url: '{{url("api/jadwal-perkelas")}}/'+kelas,
+            })
+            .then(response => {
+                var hasil = ''
+                $.each(response.data,function(index,item){
+                    var option = `
+                        <option value="${item.format_date}">${item.string_tanggal}</option>
+                    `
+
+                    hasil += option
+                })
+
+                $('#tanggal_absensi').append(hasil);
+            })
         }
     </script>
 @endpush

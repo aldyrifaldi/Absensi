@@ -261,11 +261,10 @@
                     var n = weekday[d.getDay()];
                     
                     $.each(response.data,function(index,item){
-                        if (item.nama_hari[0][n] === n) {
+                        if (item.nama_hari[n] === n) {
                             buatAbsensi(item.id_kelas)
                         }
                         else {
-                            console.log('berhasil');
                         }
                     })
             }).catch((err) => {

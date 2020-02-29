@@ -45,9 +45,9 @@ class ApiController extends Controller
             $explode[$value->nama_kelas] = explode(',',$value->nama_hari);
             $akhir = [];
 
-            if (count($explode[$value->nama_kelas]) > 1) {
+            if (count($explode[$value->nama_kelas]) != 0) {
                 foreach ($explode[$value->nama_kelas] as $k => $example) {
-                    $hasil[$example] = $example;
+                    $hasil[$value->nama_kelas][$example] = $example;
                 }
             }
             else {
@@ -57,7 +57,7 @@ class ApiController extends Controller
                 'nama_kelas' => $value->nama_kelas,
                 'id_kelas' => $value->id_kelas,
                 'id_jadwal' => $value->id_jadwal,
-                'nama_hari' => $hasil
+                'nama_hari' => $hasil[$value->nama_kelas]
             ]);
         }
 

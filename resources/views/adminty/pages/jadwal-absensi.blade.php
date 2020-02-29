@@ -50,13 +50,13 @@
                             }
                         ];
 
-                        console.log(item.nama_hari[0][value] == value);
+                        console.log(item.nama_hari[value] == value);
 
 
                         var this_element = `
                                             <div class="border-checkbox-group border-checkbox-group-primary">
                                                 <input `+
-                                                    (item.nama_hari[0][value] === value ? 'checked' : '') 
+                                                    (item.nama_hari[value] === value ? 'checked' : '') 
                                                 +
                                                 `   onchange="checkbox(${item.id_kelas})" value="${value}" class="border-checkbox checkbox${item.id_kelas}" name="nama_hari[]" type="checkbox" id="checkbox${index}${item.id_kelas}">
                                                 <label class="border-checkbox-label" for="checkbox${index}${item.id_kelas}">${show.map(e => e[value])}</label>

@@ -265,6 +265,7 @@
                             buatAbsensi(item.id_kelas)
                         }
                         else {
+                            console.log('berhasil');
                         }
                     })
             }).catch((err) => {

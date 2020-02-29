@@ -42,17 +42,22 @@ class ApiController extends Controller
         $no = 0;
         $finish = [];
         foreach ($kelas as $key => $value) {
-            $explode = explode(',',$value->nama_hari);
+            $explode[$value->nama_kelas] = explode(',',$value->nama_hari);
             $akhir = [];
-            foreach ($explode as $k => $example) {
-                $hasil[$example] = $example;
+
+            if (count($explode[$value->nama_kelas]) > 1) {
+                foreach ($explode[$value->nama_kelas] as $k => $example) {
+                    $hasil[$example] = $example;
+                }
             }
-            array_push($finish,[$hasil]);
+            else {
+                $hasil = [];
+            }
             array_push($array,[
                 'nama_kelas' => $value->nama_kelas,
                 'id_kelas' => $value->id_kelas,
                 'id_jadwal' => $value->id_jadwal,
-                'nama_hari' => $finish[$key],
+                'nama_hari' => $hasil
             ]);
         }
 

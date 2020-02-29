@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\JadwalAbsensi;
 use App\Kelas;
 use App\DetailAbsensi;
+use App\Absen;
+use App\Santri;
+use Illuminate\Support\Str;
 
 class ApiController extends Controller
 {
@@ -57,33 +60,56 @@ class ApiController extends Controller
         return response()->json($array);
     }
 
-    public function jadwalAbsensiPerKelas($kelas)
+    public function dataAbsenSantri($kelas, $tanggal)
     {
-        $jadwal = DetailAbsensi::where('id_kelas',$kelas)->get();
+        $detailabsen = DetailAbsensi::where('tanggal_absensi',$tanggal)
+                            ->where('id_kelas',$kelas)
+                            ->first();
+
+        $absen = Santri::leftJoin('absensi','santri.id','=','absensi.id_santri',function($query){
+            $query->where('no_detail_absensi',$detailabsen->no_detail_absensi);
+        })->where('santri.id_kelas',$kelas)->select('*','santri.id as id_santri','absensi.id as id_absensi','absensi.no_detail_absensi as no_detail_absensi','absensi.alasan')->get();
+
         $array = [];
-        foreach ($jadwal as $key => $value) {
+        foreach ($absen as $key => $value) {
             array_push($array,[
-                'string_tanggal' => date('F, d M Y',strtotime($value->tanggal_absensi)),
-                'format_date' => $value->tanggal_absensi
+                'nama_santri' => $value->nama_santri,
+                'no_detail_absensi' => $detailabsen->no_detail_absensi,
+                'status' => $value->status,
+                'alamat' => $value->alamat,
+                'id_santri' => $value->id_santri,
+                'alasan' => $value->alasan,
             ]);
         }
         return response()->json($array);
     }
 
-    public function absensi(Request $request)
-    {
-        $no_detail = time().Str::random(8);
-        $absensi = DetailAbsen::create([
-            'no_detail_absensi' => $request->no_detail,
-            'tanggal_absensi' => date('Y-m-d'),
-        ]);
 
-        if ($absensi) {
-            return response()->json('Berhasil','Absensi Terbuka');
+    public function alasanSantri(Request $request)
+    {
+        $absen = Absen::where('id_santri',$request->id_santri)
+                        ->where('no_detail_absensi',$request->no_detail_absensi)
+                        ->first();
+        
+        if ($absen->update(['alasan' => $request->alasan])) {
+            return response()->json(['Berhasil']);
         }
-        return response()->json('Gagal','Absensi Tidak Terbuka');
+        return response()->json(['Gagal']);
     }
 
+    public function jadwalAbsensiPerKelas($kelas)
+    {
+        
+        $jadwal = DetailAbsensi::where('id_kelas',$kelas)->get();
+        $array = [];
+        foreach ($jadwal as $key => $value) {
+            array_push($array,[
+                'string_tanggal' => date('l, d M Y',strtotime($value->tanggal_absensi)),
+                'format_date' => $value->tanggal_absensi
+            ]);
+        }
+        return response()->json($array);
+    }
 
     public function kelas(){
         $kelas = Kelas::get();

@@ -20,6 +20,18 @@ class AbsenController extends Controller
             return response()->json($validator);
         }
 
+        $cek_status = Absen::where('id_santri',$request->id_santri)
+                            ->where('no_detail_absensi',$request->no_detail_absensi)
+                            ->first();
+
+        if ($cek_status) {
+            $cek_status->update([
+                'status' => $request->status,
+            ]);
+
+            return response()->json(['Berhasil diupdate']);
+        }
+
         $absen = Absen::create($request->all());
         if ($absen) {
             return response()->json(['Berhasil' => 'Absensi berhasil terkirim']);
@@ -27,23 +39,6 @@ class AbsenController extends Controller
         return response()->json(['Gagal' => 'Absensi gagal terkirim']);
     }
 
-    public function update(Request $request,$absen)
-    {
-        $validator = Validator::make($request->all(),[
-            'id_santri' => 'required',
-            'status' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator);
-        }
-
-        $absen = Absen::find($absen)->update($request->all());
-        if ($absen) {
-            return response()->json(['Berhasil' => 'Absensi berhasil diupdate']);
-        }
-        return response()->json(['Gagal' => 'Absensi gagal diupdate']);
-    }
 
     public function destroy($absen)
     {

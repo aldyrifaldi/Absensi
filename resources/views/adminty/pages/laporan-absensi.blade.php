@@ -41,10 +41,11 @@
                                 <table class="table table-bordered table-hover table-striped">
                                     <thead>
                                         <tr>
-                                            <th class="text-center" width="3%">No.</th>
-                                            <th class="text-center">Nama Santri</th>
-                                            <th class="text-center">Status Kehadiran</th>
-                                            <th class="text-center">Keterangan</th>
+                                            <th rowspan="2" class="text-center" width="3%">No.</th>
+                                            <th rowspan="2" width="25%" class="text-center">Nama Santri</th>
+                                            <th colspan="2" class="text-center">Absensi</th>
+                                        </tr>
+                                        <tr id="thead-daftar-absensi">
                                         </tr>
                                     </thead>
                                     <tbody id="daftar_santri">
@@ -64,6 +65,7 @@
         </div>
     </div>
 </div>
+
 @endsection
 
 @push('script')
@@ -103,12 +105,40 @@
                 url: '{{url("api/data-absensi")}}/'+kelas,
             })
             .then(response => {
-                console.log(response.data);
                 var hasil = ''
+                $('#table-absensi').removeClass('d-none');
+                var no = 1;
                 $.each(response.data,function(index,item){
+                
+                    $('#daftar_santri').append(`
+                            <tr id="baris-santri${item.id}">
+                                <td>${no++}</td>
+                                <td>${item.nama_santri}</td>
+                            </tr>
+                    `)
+                    var number = 0;
+                    var string_tanggal = item.tanggal_absensi;
+                    var array_tanggal = string_tanggal.split(',');
+                    $.each(array_tanggal,function(i,data){
+
+                        $.each(item.status[data],function(i, k){
+                            console.log(k);
+                            if (!k.status) {
+                                $('#baris-santri'+item.id).append(`
+                                <td>Hadir</td>
+                            `)    
+                            }
+                            else {
+                                $('#baris-santri'+item.id).append(`
+                                    <td>${k.status}</td>
+                                `)
+                            }
+                            $('#thead-daftar-absensi').append(`
+                                <th>${k.tanggal_absensi}</th>
+                            `)
+                        })
+                    })
                     
-                    
-                    hasil += optionvar
                 })
 
                 $('#tanggal_absensi').append(hasil);

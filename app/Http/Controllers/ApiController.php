@@ -104,17 +104,34 @@ class ApiController extends Controller
             ->get();
 
 
-            $detailabsen = DetailAbsensi::where('id_kelas',$kelas)
-                                        ->whereYear('created_at',date('Y'))->get();
-            foreach ($detailabsen as $key => $value) {
-                $array[$value->tanggal_absensi] = Santri::leftJoin('absensi',function($query) use($value){
-                    $query->on('absensi.id_santri','=','santri.id')
-                    ->where('absensi.no_detail_absensi',$value->no_detail_absensi);
-                })
-                ->select('santri.id as id','nama_santri','santri.created_at as created_at_santri','absensi.status','absensi.no_detail_absensi','absensi.created_at as created_at_absensi','absensi.alasan')
-                ->orderBy('santri.nama_santri','asc')
-                ->get();
+            
+            $santri = Santri::where('id_kelas',$kelas)
+                            ->get();
+            $array = [];
+            foreach ($santri as $key => $value) {
+                $detailabsen = DetailAbsensi::where('id_kelas',$kelas)
+                                            ->whereYear('created_at',date('Y'))
+                                            ->orderBy('tanggal_absensi','asc')
+                                            ->get();
+                $string_tanggal = '';
+                foreach ($detailabsen as $k => $v) {
+                    $absen = Absen::where('id_santri',$value->id)
+                                    ->where('absensi.no_detail_absensi',$v->no_detail_absensi)
+                                    ->select('absensi.status','absensi.alasan','detail_absensi.tanggal_absensi')
+                                    ->join('detail_absensi','detail_absensi.no_detail_absensi','=','absensi.no_detail_absensi')
+                                    ->get();
+                    $string_tanggal .= $v->tanggal_absensi.',';
+                    $array_absen[$v->tanggal_absensi] = $absen;
+                }
+
+                array_push($array,[
+                    'id' => $value->id,
+                    'nama_santri' => $value->nama_santri,
+                    'status' => $array_absen,
+                    'tanggal_absensi' => $string_tanggal,
+                ]);
             }
+            
 
         return response()->json($array);
     }

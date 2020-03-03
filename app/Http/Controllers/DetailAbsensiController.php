@@ -15,7 +15,9 @@ class DetailAbsensiController extends Controller
         if ($cek_detail_absen > 0) {
             return response()->json(['Data sudah ada']);
         }
-        $no_detail = time().rand().rand();
+
+        
+        $no_detail = date('ymd').rand();
         $detail_absen = DetailAbsensi::create([
             'no_detail_absensi' => $no_detail,
             'tanggal_absensi' => date('Y-m-d'),

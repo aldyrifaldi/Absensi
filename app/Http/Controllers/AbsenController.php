@@ -29,9 +29,19 @@ class AbsenController extends Controller
                 'status' => $request->status,
             ]);
 
+            $cek_status->delete();
+
+            if ($request->status == 'Hadir') {
+                return response()->json(['Santri telah hadir']);
+            }
+
             return response()->json(['Berhasil diupdate']);
         }
 
+        if ($request->status == 'Hadir') {
+            return response()->json(['Santri telah hadir']);
+        }
+        
         $absen = Absen::create($request->all());
         if ($absen) {
             return response()->json(['Berhasil' => 'Absensi berhasil terkirim']);

@@ -54,7 +54,7 @@
                                             <th class="text-center" width="3%">No.</th>
                                             <th class="text-center">Nama Santri</th>
                                             <th class="text-center">Status Kehadiran</th>
-                                            <th class="text-center">Alasan</th>
+                                            <th class="text-center">Keterangan</th>
                                         </tr>
                                     </thead>
                                     <tbody id="daftar_santri">
@@ -74,91 +74,91 @@
         </div>
     </div>
 </div>
-
-{{-- testing comment --}}
-
-
-
-
 @endsection
 
 @push('script')
     <script>
         function tanggalAbsensi(){
+
             $('#tidak-ada').addClass('d-none');
             var tanggal = $('#tanggal_absensi').val();
             var kelas = $('#id_kelas').val();
             axios({
                 method: 'get',
                 url: '{{url("api/data-absen-santri")}}/'+kelas+'/'+tanggal,
-        })
-        .then((response) => {
-            var santri = $('#daftar_santri');
-            var no = 1; 
-            var value_pilihan = ['Hadir','Izin','Alfa'];
+            })
+            .then((response) => {
+                var santri = $('#daftar_santri');
+                var no = 1; 
+                var value_pilihan = ['Izin','Alfa'];
 
-            if (response.data.length == 0) {
-                $('#tidak-ada').removeClass('d-none');
-            }
-            $.each(response.data,function(index,item){
-
-                $('#table-absensi').removeClass('d-none');
-                var hasil_pilihan = '';
-                console.log(item.status);
+                if (response.data.length == 0) {
+                    $('#tidak-ada').removeClass('d-none');
+                }
                 
-                function optionStatus(value, index, array){
-                    if (item.status == value) {
-                        var pilihan = `
-                        <option selected value="${value}">${value}</option>
-                    `
+                $('#daftar_santri tr').html(' ');
+
+                $.each(response.data,function(index,item){
+
+                    $('#table-absensi').removeClass('d-none');
+                    var hasil_pilihan = '';
+                    
+                    function optionStatus(value, index, array){
+                        if (item.status == value) {
+                            var pilihan = `
+                            <option selected value="${value}">${value}</option>
+                        `
+                        }
+                        else{
+                            var pilihan = `
+                                <option value="${value}">${value}</option>
+                            `
+                        }
+                        
+
+                        hasil_pilihan += pilihan;
+                    }
+                    value_pilihan.forEach(optionStatus)
+                    
+                    var no_detail_absensi = item.no_detail_absensi;
+                    santri.append(`
+                        <tr id="list-santri">
+                            <td scope="row">${no++}</td>
+                            <td>${item.nama_santri}</td>
+                            <td>
+                                <div class="form-group">    
+                                    <select onchange="kirimStatus(${item.id_santri},${no_detail_absensi})" class="form-control" name="id_santri" id="id_santri">
+                                        <option disabled value=" ">== Status Absensi ==</option>
+                                        <option selected value="Hadir">Hadir</option>
+                                        `+
+                                            hasil_pilihan
+                                        +`
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <input value="`+(item.alasan == null ? '': item.alasan) +`" onkeyup="alasan(${item.id_santri},${no_detail_absensi})" type="text" name="alasan" class="form-control" id="alasan${item.id_santri}" placeholder="Keterangan">
+                                </div>
+                            </td>
+                        </tr>
+                    `)
+                    if (item.status === null) {
+                        $('#alasan'+item.id_santri).attr('readonly',true);
                     }
                     else{
-                        var pilihan = `
-                            <option value="${value}">${value}</option>
-                        `
+                        $('#alasan'+item.id_santri).removeAttr('readonly');
                     }
-                    
+                })
+            }).catch((err) => {
 
-                    hasil_pilihan += pilihan;
-                }
-                value_pilihan.forEach(optionStatus)
-                
-                var no_detail_absensi = item.no_detail_absensi;
-                santri.append(`
-                    <tr>
-                        <td scope="row">${no++}</td>
-                        <td>${item.nama_santri}</td>
-                        <td>
-                            <div class="form-group">    
-                                <select onchange="kirimStatus(${item.id_santri},${no_detail_absensi})" class="form-control" name="id_santri" id="id_santri">
-                                    <option selected disabled value=" ">== Status Absensi ==</option>
-                                    `+
-                                        hasil_pilihan
-                                    +`
-                                </select>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="form-group">
-                                <input value="`+(item.alasan == null ? '': item.alasan) +`" onchange="alasan(${item.id_santri},${no_detail_absensi})" type="text" name="alasan" class="form-control" id="alasan${item.id_santri}" placeholder="Alasan">
-                            </div>
-                        </td>
-                    </tr>
-                `)
-                
-                if (item.status == 'Hadir') {
-                    $('#alasan'+item.id_santri).attr('readonly',true);
-                }
             })
-        }).catch((err) => {
-            
-        })
         }
 
 
 
         function alasan(id_santri,no_detail_absensi){
-            var alasan = $('#alasan').val();
+            var alasan = $('#alasan'+id_santri).val();
             var id_santri = id_santri;
             var no_detail_absensi = no_detail_absensi;
             axios({
@@ -182,8 +182,15 @@
             var no_detail = no_detail_absensi;
             var status = $('#id_santri').val();
 
-            
-            
+            if (status !== 'Hadir' ) {
+                $('#alasan'+id_santri).removeAttr('readonly');
+            }
+            else {
+                $('#alasan'+id_santri).attr('readonly',true);
+                $('#alasan'+id_santri).val('');
+                
+            }
+
             axios({
                 method: 'post',
                 url: '{{route("absen.store")}}',
@@ -194,6 +201,7 @@
                 },
             })
             .then((response) => {
+                console.log(response.data);
             }).catch((err) => {
                 
             });
@@ -214,7 +222,6 @@
                     var option = `
                         <option value="${item.id}">${item.nama_kelas}</option>
                     `
-
                     hasil += option
                 })
 

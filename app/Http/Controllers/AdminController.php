@@ -51,6 +51,9 @@ class AdminController extends Controller
                 'pengaturan-absensi' => [
                     'pages' => $pages,
                 ],
+                'laporan-absensi' => [
+                    'pages' => $pages,
+                ],
             ];
             
             $data = [];

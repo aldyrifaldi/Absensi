@@ -9,7 +9,7 @@ use App\DetailAbsensi;
 use App\Absen;
 use App\Santri;
 use Illuminate\Support\Str;
-
+use Carbon\Carbon;
 class ApiController extends Controller
 {
     public function inputJadwal(Request $request)
@@ -71,9 +71,13 @@ class ApiController extends Controller
                             ->where('id_kelas',$kelas)
                             ->first();
 
-        $absen = Santri::leftJoin('absensi','santri.id','=','absensi.id_santri',function($query){
-            $query->where('no_detail_absensi',$detailabsen->no_detail_absensi);
-        })->where('santri.id_kelas',$kelas)->select('*','santri.id as id_santri','absensi.id as id_absensi','absensi.no_detail_absensi as no_detail_absensi','absensi.alasan')->get();
+        $absen = Santri::leftJoin('absensi',function($query) use($detailabsen) {
+            $query->on('santri.id','=','absensi.id_santri')
+            ->where('absensi.no_detail_absensi',$detailabsen->no_detail_absensi);
+        })
+        ->where('santri.id_kelas',$kelas)
+        ->select('*','santri.id as id_santri','absensi.id as id_absensi','absensi.no_detail_absensi as no_detail_absensi','absensi.alasan')
+        ->get();
 
         $array = [];
         foreach ($absen as $key => $value) {
@@ -89,6 +93,31 @@ class ApiController extends Controller
         return response()->json($array);
     }
 
+    public function dataAbsensi($kelas)
+    {
+            $santri = Santri::leftJoin('absensi',function($query){
+                $query->on('santri.id','=','absensi.id_santri');
+            })->leftJoin('detail_absensi',function($query) use($kelas){
+                $query->on('detail_absensi.no_detail_absensi','=','absensi.no_detail_absensi')
+                ->where('detail_absensi.id_kelas',$kelas);
+            })
+            ->get();
+
+
+            $detailabsen = DetailAbsensi::where('id_kelas',$kelas)
+                                        ->whereYear('created_at',date('Y'))->get();
+            foreach ($detailabsen as $key => $value) {
+                $array[$value->tanggal_absensi] = Santri::leftJoin('absensi',function($query) use($value){
+                    $query->on('absensi.id_santri','=','santri.id')
+                    ->where('absensi.no_detail_absensi',$value->no_detail_absensi);
+                })
+                ->select('santri.id as id','nama_santri','santri.created_at as created_at_santri','absensi.status','absensi.no_detail_absensi','absensi.created_at as created_at_absensi','absensi.alasan')
+                ->orderBy('santri.nama_santri','asc')
+                ->get();
+            }
+
+        return response()->json($array);
+    }
 
     public function alasanSantri(Request $request)
     {

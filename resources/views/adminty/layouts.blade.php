@@ -193,6 +193,21 @@
                                         </li>
                                     </ul>
                                 </li>
+                                <li class="pcoded-hasmenu">
+                                    <a href="javascript:void(0)">
+                                        <span class="pcoded-micon">
+                                            <i class="fa fa-tasks" aria-hidden="true"></i>
+                                        </span>
+                                        <span class="pcoded-mtext">Laporan</span>
+                                    </a>
+                                    <ul class="pcoded-submenu">
+                                        <li class=" ">
+                                            <a href="{{url('admin/laporan-absensi')}}">
+                                                <span class="pcoded-mtext">Laporan Absensi</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
                             </ul>
                         </div>
                     </nav>

@@ -94,20 +94,15 @@ class ApiController extends Controller
     }
 
     public function dataAbsensi($kelas)
-    {
-            $santri = Santri::leftJoin('absensi',function($query){
-                $query->on('santri.id','=','absensi.id_santri');
-            })->leftJoin('detail_absensi',function($query) use($kelas){
-                $query->on('detail_absensi.no_detail_absensi','=','absensi.no_detail_absensi')
-                ->where('detail_absensi.id_kelas',$kelas);
-            })
-            ->get();
-
-
-            
+    {          
             $santri = Santri::where('id_kelas',$kelas)
                             ->get();
             $array = [];
+            $return_detail = DetailAbsensi::where('id_kelas',$kelas)
+                                        ->whereYear('created_at',date('Y'))
+                                        ->orderBy('tanggal_absensi','asc')
+                                        ->get();
+
             foreach ($santri as $key => $value) {
                 $detailabsen = DetailAbsensi::where('id_kelas',$kelas)
                                             ->whereYear('created_at',date('Y'))
@@ -121,7 +116,7 @@ class ApiController extends Controller
                                     ->join('detail_absensi','detail_absensi.no_detail_absensi','=','absensi.no_detail_absensi')
                                     ->get();
                     $string_tanggal .= $v->tanggal_absensi.',';
-                    $array_absen[$v->tanggal_absensi] = $absen;
+                    $array_absen[$k] = $absen;
                 }
                 
                 array_push($array,[
@@ -132,8 +127,16 @@ class ApiController extends Controller
                 ]);
             }
             
+            foreach ($return_detail as $j => $s) {
+                $array_detail[$j] = [
+                    'tanggal_absensi' => date('l, d F Y',strtotime($s->tanggal_absensi)),
+                ];
+            }
 
-        return response()->json($array);
+        return response()->json([
+            'data' => $array,
+            'jadwal' => $array_detail,
+        ]);
     }
 
     public function alasanSantri(Request $request)

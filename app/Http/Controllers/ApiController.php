@@ -123,7 +123,7 @@ class ApiController extends Controller
                     $string_tanggal .= $v->tanggal_absensi.',';
                     $array_absen[$v->tanggal_absensi] = $absen;
                 }
-
+                
                 array_push($array,[
                     'id' => $value->id,
                     'nama_santri' => $value->nama_santri,

@@ -122,19 +122,13 @@
                     $.each(array_tanggal,function(i,data){
 
                         $.each(item.status[data],function(i, k){
-                            console.log(k);
-                            if (!k.status) {
-                                $('#baris-santri'+item.id).append(`
-                                <td>Hadir</td>
-                            `)    
-                            }
-                            else {
-                                $('#baris-santri'+item.id).append(`
-                                    <td>${k.status}</td>
-                                `)
-                            }
+                            $('#baris-santri'+item.id).append(`
+                                <td>${k.status}</td>
+                            `)
+                            var date = new Date(k.tanggal_absensi);
+
                             $('#thead-daftar-absensi').append(`
-                                <th>${k.tanggal_absensi}</th>
+                                <th>${(date.getUTCDate() +" "+ date.getUTCMonth()+1) +" "+  date.getUTCFullYear()}</th>
                             `)
                         })
                     })

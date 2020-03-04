@@ -114,7 +114,6 @@
                                 <option value="${value}">${value}</option>
                             `
                         }
-                        
 
                         hasil_pilihan += pilihan;
                     }
@@ -143,6 +142,7 @@
                             </td>
                         </tr>
                     `)
+
                     if (item.status === null) {
                         $('#alasan'+item.id_santri).attr('readonly',true);
                     }

@@ -174,6 +174,8 @@
                     var hasil = ''
                     $('#table-absensi').removeClass('d-none');
                     
+                    var tanggal_perbulan = [];
+                    var string_tanggal_perbulan = [];
                     $.each(array_month,function(i,t){
                         var awal_hari = moment(t).startOf('month');
                         var akhir_hari = moment(t).endOf('month');
@@ -184,12 +186,19 @@
                         var mulai_hari = new Date(awal_hari);
                         var selesai_hari = new Date(akhir_hari);
                         while (mulai_hari <= selesai_hari) {
-                            day.push(moment(mulai_hari).format('DD/MM'));
+                            day.push(moment(mulai_hari).format('MM/DD'));
                             string_day.push(moment(mulai_hari).format('dddd'));
                             var tanggal_baru = mulai_hari.setDate(mulai_hari.getDate() + 1);
                             mulai_hari = new Date(tanggal_baru);
                         }
 
+                        tanggal_perbulan.push(day);
+                        string_tanggal_perbulan.push(string_day);
+
+                    });
+
+                    var no = 0;
+                    $.each(string_tanggal_perbulan,function(r,w){
                         Array.prototype.diff = function(arr2) {
                             var ret = [];
                             this.sort();
@@ -202,17 +211,26 @@
                             return ret;
                         };
 
+                        var colspan = w.diff(response.data.jadwal);
+                        var daftar_bulan = moment().startOf('year');
+                        daftar_bulan = moment(daftar_bulan._d).format('MM-DD-YYYY');
+                        var daftar_bulan = new Date(daftar_bulan);
 
-                        var colspan = string_day.diff(response.data.jadwal);
-                        console.log(colspan.length);
+                        //tinggal di increment agar bisa mulai dari januari sampai dengan desember 
+                        var bulan_tambah = daftar_bulan.setMonth(daftar_bulan.getMonth() + no++);
+                        var bulan_plus = new Date(bulan_tambah);
 
                         $('#bulan_absensi_santri').append(`
-                            <th class="text-center" colspan="${colspan.length}">${moment(t).format('MMMM')}</th>
+                            <th class="text-center" colspan="${colspan.length}">${moment(bulan_plus).format('MMMM')}</th>
                         `)
-                    
-                        $.each(day,function(h,tanggal){
-                            var string_tanggal = moment(tanggal).format('dddd');
-                            console.log('String tanggal',string_tanggal);
+                    })
+
+
+                    $.each(tanggal_perbulan,function(h,bulan){
+                        
+                        
+                        $.each(bulan,function(t,tanggal){
+                            var string_tanggal = moment(tanggal).format('dddd').toString();
                             var tanggal_hasil = response.data.jadwal.find(element => element === string_tanggal);
                             if (tanggal_hasil === undefined) {
                                 
@@ -223,7 +241,7 @@
                                 `);
                             }
                         })
-                    });
+                        })
                 }
             })
         }

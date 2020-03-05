@@ -114,7 +114,7 @@ class ApiController extends Controller
                                     ->join('detail_absensi','detail_absensi.no_detail_absensi','=','absensi.no_detail_absensi')
                                     ->get();
                     $string_tanggal .= $v->tanggal_absensi.',';
-                    $array_absen[$k] = $absen;
+                    $array_absen[date('d F Y',strtotime($v->tanggal_absensi))] = $absen;
                 }
                 
                 array_push($array,[

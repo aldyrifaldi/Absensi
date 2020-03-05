@@ -98,10 +98,8 @@ class ApiController extends Controller
             $santri = Santri::where('id_kelas',$kelas)
                             ->get();
             $array = [];
-            $return_detail = DetailAbsensi::where('id_kelas',$kelas)
-                                        ->whereYear('created_at',date('Y'))
-                                        ->orderBy('tanggal_absensi','asc')
-                                        ->get();
+            $jadwal_absensi = JadwalAbsensi::where('id_kelas',$kelas)
+                                        ->first();
 
             foreach ($santri as $key => $value) {
                 $detailabsen = DetailAbsensi::where('id_kelas',$kelas)
@@ -126,11 +124,11 @@ class ApiController extends Controller
                     'tanggal_absensi' => $string_tanggal,
                 ]);
             }
+
+            $jadwal_absensi = explode(',',$jadwal_absensi->nama_hari);
             
-            foreach ($return_detail as $j => $s) {
-                $array_detail[$j] = [
-                    'tanggal_absensi' => date('l, d F Y',strtotime($s->tanggal_absensi)),
-                ];
+            foreach ($jadwal_absensi as $j => $s) {
+                $array_detail[$j] = $s;
             }
 
         return response()->json([

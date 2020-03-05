@@ -43,7 +43,7 @@
                                         <tr>
                                             <th rowspan="2" class="text-center" width="3%">No.</th>
                                             <th rowspan="2" width="25%" class="text-center">Nama Santri</th>
-                                            <th colspan="100" class="text-center">Absensi</th>
+                                            <th colspan="500" class="text-center">Absensi</th>
                                         </tr>
                                         <tr id="thead-daftar-absensi">
                                         </tr>
@@ -79,7 +79,69 @@
 
 
         $(document).ready(function(){
+            //get full 15 days before to 15 days after current date
+
+            $scope = []; //Array where rest of the dates will be stored
+
+            $scope.prevDate = moment().subtract(15, 'days');//15 days back date from today(This is the from date)
+
+            $scope.nextDate = moment().add(15, 'days');//Date after 15 days from today (This is the end date)
+
+            //extracting date from objects in MM-DD-YYYY format
+            $scope.prevDate = moment($scope.prevDate._d).format('MM-DD-YYYY');
+            $scope.nextDate = moment($scope.nextDate._d).format('MM-DD-YYYY');
+
+            //creating JS date objects
+            var start = new Date($scope.prevDate);
+            var end = new Date($scope.nextDate);
+
+            //Logic for getting rest of the dates between two dates("FromDate" to "EndDate")
+            while(start < end){
+                $scope.push(moment(start).format('ddd DD-MM'));
+                var newDate = start.setDate(start.getDate() + 1);
+                start = new Date(newDate);
+            }
+
+            console.log('Dates:- ');
+            console.log($scope);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            //get full date in current month
+            var currentDate = moment().startOf('month');
+            var futureMonthEnd = moment().endOf('month');
+            var date = [];
+            currentDate = moment(currentDate._d).format('MM-DD-YYYY');
+            futureMonthEnd = moment(futureMonthEnd._d).format('MM-DD-YYYY');
+
+            var start = new Date(currentDate);
+            var end = new Date(futureMonthEnd);
+            while (start <= end) {
+                date.push(moment(start).format('ddd DD-MM'));
+                var newDate = start.setDate(start.getDate() + 1);
+                start = new Date(newDate);
+            }
+
+
             
+            // console.log('Tanggal dalam satu bulan',date);
             axios({
                 method: 'get',
                 url: '{{url("api/kelas")}}',
@@ -121,15 +183,19 @@
                 }
                 else {
 
-                    var hasil = ''
-                    $('#table-absensi').removeClass('d-none');
+
+                
+
+
+                    // var hasil = ''
+                    // $('#table-absensi').removeClass('d-none');
                     var no = 1;
 
-                    $.each(response.data.jadwal,function(y,x){
-                        $('#thead-daftar-absensi').append(`
-                            <th>${x.tanggal_absensi}</th>
-                        `)
-                    })
+                    // $.each(response.data.jadwal,function(y,x){
+                    //     $('#thead-daftar-absensi').append(`
+                    //         <th>${x.tanggal_absensi}</th>
+                    //     `)
+                    // })
 
                     $.each(response.data.data,function(index,item){
                     
@@ -154,8 +220,62 @@
                         })
                         
                     })
+
+
+
+
+                      //get full date in one year
+
+                    var startMonth = moment().startOf('year');
+                    var endMonth = moment().endOf('year');
+                    var array_month = [];
+                    var string_month = [];
+                    startMonth = moment(startMonth._d).format('MM-DD-YYYY');
+                    endMonth = moment(endMonth._d).format('MM-DD-YYYY');
+                    var start = new Date(startMonth);
+                    var end = new Date(endMonth);
+                    while (start <= end) {
+                        array_month.push(moment(start).format('MM-DD-YYYY'));
+                        string_month.push(moment(start).format('MMMM'));
+                        var newMonth = start.setMonth(start.getMonth() + 1);
+                        start = new Date(newMonth);
+                    }
+
+                    var hasil = ''
+                    $('#table-absensi').removeClass('d-none');
+                    
+                    $.each(array_month,function(i,t){
+                        var awal_hari = moment(t).startOf('month');
+                        var akhir_hari = moment(t).endOf('month');
+                        var day = [];
+                        awal_hari = moment(awal_hari._d).format('MM-DD-YYYY');
+                        akhir_hari = moment(akhir_hari._d).format('MM-DD-YYYY');
+                        var mulai_hari = new Date(awal_hari);
+                        var selesai_hari = new Date(akhir_hari);
+                        while (mulai_hari <= selesai_hari) {
+                            day.push(moment(mulai_hari).format('DD MMMM YYYY'));
+                            var tanggal_baru = mulai_hari.setDate(mulai_hari.getDate() + 1);
+                            mulai_hari = new Date(tanggal_baru);
+                        }
+
+                    
+                        $.each(day,function(h,tanggal){
+                            var string_tanggal = moment(tanggal).format('dddd');
+                            var tanggal_hasil = response.data.jadwal.find(element => element === string_tanggal);
+                            if (tanggal_hasil === undefined) {
+                                
+                            }
+                            else {
+                                $('#thead-daftar-absensi').append(`
+                                    <th>${tanggal}</th>
+                                `)
+
+                            }
+                        })
+                    });
+
                 }
-                $('#tanggal_absensi').append(hasil);
+                // $('#tanggal_absensi').append(hasil);
             })
         }
     </script>

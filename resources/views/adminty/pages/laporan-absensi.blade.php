@@ -75,8 +75,8 @@
                                 <table class="table table-bordered table-hover table-striped">
                                     <thead>
                                         <tr>
-                                            <th rowspan="3" class="text-center" width="3%">No.</th>
-                                            <th rowspan="3" width="25%" class="text-center">Nama Santri</th>
+                                            <th rowspan="3" class="text-center" style="vertical-align: middle" width="3%">No.</th>
+                                            <th rowspan="3" width="25%" class="text-center" style="vertical-align: middle">Nama Santri</th>
                                             <th colspan="500" class="text-center">Absensi</th>
                                         </tr>
                                         <tr id="bulan_absensi_santri">
@@ -94,6 +94,18 @@
                                 <i class="fa fa-5x fa-building" aria-hidden="true"></i>
                             </div>
                             <h2  class="text-center h2 mt-3 font-weight-bold">Pilih Kelas</h2>
+                        </div>
+                        <div class="col-md d-none" id="pilih-tahun">
+                            <div class="text-center mt-4">
+                                <i class="fa fa-5x fa-calendar-o" aria-hidden="true"></i>
+                            </div>
+                            <h2  class="text-center h2 mt-3 font-weight-bold">Pilih Tahun</h2>
+                        </div>
+                        <div class="col-md d-none" id="pilih-bulan">
+                            <div class="text-center mt-4">
+                                <i class="fa fa-5x fa-calendar-o" aria-hidden="true"></i>
+                            </div>
+                            <h2  class="text-center h2 mt-3 font-weight-bold">Pilih Bulan</h2>
                         </div>
                         <div class="col-md d-none" id="santri-tidak-ada">
                             <div class="text-center mt-4">
@@ -137,12 +149,98 @@
         })
 
 
+        function tahun() {
+            $('#pilih-tahun').removeClass('d-none');
+            $('#pilih-tahun').addClass('d-none');
+            $('#pilih-bulan').removeClass('d-none');
+            $('#option_bulan').removeClass('d-none');
+            $('#table-absensi').addClass('d-none');
+            var tahun = $('option_tahun').val();
+            //get full date in one year
+
+            var startMonth = moment(tahun).startOf('year');
+            var endMonth = moment(tahun).endOf('year');
+            var array_month = [];
+            var string_month = [];
+            startMonth = moment(startMonth._d).format('MM-DD-YYYY');
+            endMonth = moment(endMonth._d).format('MM-DD-YYYY');
+            var start = new Date(startMonth);
+            var end = new Date(endMonth);
+            while (start <= end) {
+                string_month.push(moment(start).format('MM'));
+                var newMonth = start.setMonth(start.getMonth() + 1);
+                start = new Date(newMonth);
+            }
+
+            var hasil = ''
+
+            $.each(string_month,function(q,u){
+                $('#option_bulan').append(`
+                    <option value="${u}">${moment(u).format('MMMM')}</option>
+                `)
+            })
+
+
+        }
+
+
+        function bulan(){
+            $('#pilih-bulan').removeClass('d-none');
+            $('#pilih-bulan').addClass('d-none');
+            $('#table-absensi').removeClass('d-none');
+            var tahun = $('#option_tahun').val();
+            var bulan = $('#option_bulan').val();
+            var kelas = $('#id_kelas').val();
+            $('#daftar_santri').html(' ')
+            axios({
+                method: 'get',
+                url: '{{url("api/data-absensi")}}/'+kelas+'/'+tahun+'/'+bulan,
+            })
+            .then(response => {
+                var no = 1;
+
+                $('#tanggal_absensi_santri').html(' ');
+
+                $.each(response.data.tanggal_absensi,function(t,tanggal){
+                        $('#tanggal_absensi_santri').append(`
+                            <th>${tanggal}</th>
+                        `);
+                })
+
+
+                $.each(response.data.data,function(index,item){
+
+                    $('#daftar_santri').append(`
+                            <tr id="baris-santri${item.id}">
+                                <td>${no++}</td>
+                                <td>${item.nama_santri}</td>
+                            </tr>
+                    `)
+
+                    $.each(item.status,function(i, k){
+                        if (k[0] == undefined) {
+                            $('#baris-santri'+item.id).append(`
+                                <td>Hadir</td>
+                            `)
+                        }
+                        else {
+                            $('#baris-santri'+item.id).append(`
+                                <td>${k[0].status}</td>
+                            `)
+                        }
+                    })
+                    
+                })
+            })
+
+        }
+
+
 
         function kelas(){
             var kelas = $('#id_kelas').val();
-
+            $('#pilih-tahun').removeClass('d-none');
             $('#option_tahun').removeClass('d-none');
-            $('#option_bulan').removeClass('d-none');
             $('#cari_santri').removeClass('d-none');
             $('#tidak-ada').addClass('d-none');
             $('#daftar_santri').html(' ');
@@ -151,10 +249,9 @@
 
             axios({
                 method: 'get',
-                url: '{{url("api/data-absensi")}}/'+kelas,
+                url: '{{url("api/tahun-absensi")}}/'+kelas,
             })
             .then(response => {
-                console.log(response.data.data);
                 if (response.data.data === []) {
                     $('#santri-tidak-ada').removeClass('d-none');
                     $('#tidak-ada').addClass('d-none');
@@ -162,37 +259,10 @@
                 }
                 else {
 
-                    var no = 1;
-
-                    $.each(response.data.data,function(index,item){
-                    
-                        $('#daftar_santri').append(`
-                                <tr id="baris-santri${item.id}">
-                                    <td>${no++}</td>
-                                    <td>${item.nama_santri}</td>
-                                </tr>
-                        `)
-
-                        $.each(item.status,function(i, k){
-                            if (k[0] == undefined) {
-                                $('#baris-santri'+item.id).append(`
-                                    <td>Hadir</td>
-                                `)
-                            }
-                            else {
-                                $('#baris-santri'+item.id).append(`
-                                    <td>${k[0].status}</td>
-                                `)
-                            }
-                        })
-                        
-                    })
-
-
                     //get list year in absensi
-                    
-                    var startYear = moment(response.data.tahun_absensi[0]).startOf('year');
-                    var tahun_absensi = response.data.tahun_absensi;
+                        
+                    var startYear = moment(response.data[0]).startOf('year');
+                    var tahun_absensi = response.data;
                     var endYear = moment(tahun_absensi[tahun_absensi.length - 1]).endOf('year');
                     var array_year = [];
                     startYear = moment(startYear._d).format('YYYY');
@@ -206,103 +276,80 @@
                         var newYear = start.setYear(start.getFullYear() + 1);
                         start = new Date(newYear);
                     }
-                    
 
-                    //get full date in one year
 
-                    var startMonth = moment().startOf('year');
-                    var endMonth = moment().endOf('year');
-                    var array_month = [];
-                    var string_month = [];
-                    startMonth = moment(startMonth._d).format('MM-DD-YYYY');
-                    endMonth = moment(endMonth._d).format('MM-DD-YYYY');
-                    var start = new Date(startMonth);
-                    var end = new Date(endMonth);
-                    while (start <= end) {
-                        array_month.push(moment(start).format('MM-DD-YYYY'));
-                        string_month.push(moment(start).format('MMMM'));
-                        var newMonth = start.setMonth(start.getMonth() + 1);
-                        start = new Date(newMonth);
-                    }
 
-                    var hasil = ''
-                    $('#table-absensi').removeClass('d-none');
 
-                    $.each(string_month,function(q,u){
-                        $('#option_bulan').append(`
-                            <option value="${u}">${u}</option>
-                        `)
-                    })
-                    
-                    var tanggal_perbulan = [];
-                    var string_tanggal_perbulan = [];
-                    $.each(array_month,function(i,t){
-                        var awal_hari = moment(t).startOf('month');
-                        var akhir_hari = moment(t).endOf('month');
-                        var day = [];
-                        var string_day = [];
-                        awal_hari = moment(awal_hari._d).format('MM-DD-YYYY');
-                        akhir_hari = moment(akhir_hari._d).format('MM-DD-YYYY');
-                        var mulai_hari = new Date(awal_hari);
-                        var selesai_hari = new Date(akhir_hari);
-                        while (mulai_hari <= selesai_hari) {
-                            day.push(moment(mulai_hari).format('MM/DD'));
-                            string_day.push(moment(mulai_hari).format('dddd'));
-                            var tanggal_baru = mulai_hari.setDate(mulai_hari.getDate() + 1);
-                            mulai_hari = new Date(tanggal_baru);
-                        }
+
+                    // var tanggal_perbulan = [];
+                    // var string_tanggal_perbulan = [];
+                    // $.each(array_month,function(i,t){
+                    //     var awal_hari = moment(t).startOf('month');
+                    //     var akhir_hari = moment(t).endOf('month');
+                    //     var day = [];
+                    //     var string_day = [];
+                    //     awal_hari = moment(awal_hari._d).format('MM-DD-YYYY');
+                    //     akhir_hari = moment(akhir_hari._d).format('MM-DD-YYYY');
+                    //     var mulai_hari = new Date(awal_hari);
+                    //     var selesai_hari = new Date(akhir_hari);
+                    //     while (mulai_hari <= selesai_hari) {
+                    //         day.push(moment(mulai_hari).format('MM/DD'));
+                    //         string_day.push(moment(mulai_hari).format('dddd'));
+                    //         var tanggal_baru = mulai_hari.setDate(mulai_hari.getDate() + 1);
+                    //         mulai_hari = new Date(tanggal_baru);
+                    //     }
                         
-                        tanggal_perbulan.push(day);
-                        string_tanggal_perbulan.push(string_day);
+                    //     tanggal_perbulan.push(day);
+                    //     string_tanggal_perbulan.push(string_day);
 
-                    });
+                    // });
 
-                    var no = 0;
-                    $.each(string_tanggal_perbulan,function(r,w){
+                    // var no = 0;
+                    // $.each(string_tanggal_perbulan,function(r,w){
                         
-                        Array.prototype.diff = function(arr2) {
-                            var ret = [];
-                            this.sort();
-                            arr2.sort();
-                            for(var i = 0; i < this.length; i += 1) {
-                                if(arr2.indexOf(this[i]) > -1){
-                                    ret.push(this[i]);
-                                }
-                            }
-                            return ret;
-                        };
+                    //     Array.prototype.diff = function(arr2) {
+                    //         var ret = [];
+                    //         this.sort();
+                    //         arr2.sort();
+                    //         for(var i = 0; i < this.length; i += 1) {
+                    //             if(arr2.indexOf(this[i]) > -1){
+                    //                 ret.push(this[i]);
+                    //             }
+                    //         }
+                    //         return ret;
+                    //     };
 
-                        var colspan = w.diff(response.data.jadwal);
-                        console.log(colspan.length);
-                        var daftar_bulan = moment().startOf('year');
-                        daftar_bulan = moment(daftar_bulan._d).format('MM-DD-YYYY');
-                        var daftar_bulan = new Date(daftar_bulan);
+                    //     var colspan = w.diff(response.data.jadwal);
+                    //     console.log(colspan.length);
+                    //     var daftar_bulan = moment().startOf('year');
+                    //     daftar_bulan = moment(daftar_bulan._d).format('MM-DD-YYYY');
+                    //     var daftar_bulan = new Date(daftar_bulan);
 
-                        //tinggal di increment agar bisa mulai dari januari sampai dengan desember 
-                        var bulan_tambah = daftar_bulan.setMonth(daftar_bulan.getMonth() + no++);
-                        var bulan_plus = new Date(bulan_tambah);
+                    //     //tinggal di increment agar bisa mulai dari januari sampai dengan desember 
+                    //     var bulan_tambah = daftar_bulan.setMonth(daftar_bulan.getMonth() + no++);
+                    //     var bulan_plus = new Date(bulan_tambah);
                         
-                        $('#bulan_absensi_santri').append(`
-                            <th class="text-center" colspan="${colspan.length}">${moment(bulan_plus).format('MMMM')}</th>
-                        `)
-                    })
+                    //     $('#bulan_absensi_santri').append(`
+                    //         <th class="text-center" colspan="${colspan.length}">${moment(bulan_plus).format('MMMM')}</th>
+                    //     `)
+                    // })
 
 
-                    $.each(tanggal_perbulan,function(h,bulan){
+                    // $.each(tanggal_perbulan,function(h,bulan){
                         
-                        $.each(bulan,function(t,tanggal){
-                            var string_tanggal = moment(tanggal).format('dddd').toString();
-                            var tanggal_hasil = response.data.jadwal.find(element => element === string_tanggal);
-                            if (tanggal_hasil === undefined) {
+                    //     $.each(bulan,function(t,tanggal){
+                    //         var string_tanggal = moment(tanggal).format('dddd').toString();
+                    //         var tanggal_hasil = response.data.jadwal.find(element => element === string_tanggal);
+                    //         if (tanggal_hasil === undefined) {
                                 
-                            }
-                            else {
-                                $('#tanggal_absensi_santri').append(`
-                                    <th>${tanggal}</th>
-                                `);
-                            }
-                        })
-                        })
+                    //         }
+                    //         else {
+                    //             $('#tanggal_absensi_santri').append(`
+                    //                 <th>${tanggal}</th>
+                    //             `);
+                    //         }
+                    //     })
+                    //     })
                 }
             })
         }

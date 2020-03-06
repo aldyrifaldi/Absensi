@@ -93,7 +93,7 @@ class ApiController extends Controller
         return response()->json($array);
     }
 
-    public function dataAbsensi($kelas)
+    public function dataAbsensi($kelas,$tahun,$bulan)
     {          
             $santri = Santri::where('id_kelas',$kelas)
                             ->get();
@@ -103,7 +103,8 @@ class ApiController extends Controller
 
             foreach ($santri as $key => $value) {
                 $detailabsen = DetailAbsensi::where('id_kelas',$kelas)
-                                            ->whereYear('created_at',date('Y'))
+                                            ->whereYear('created_at',$tahun)
+                                            ->whereMonth('created_at',$bulan)
                                             ->orderBy('tanggal_absensi','asc')
                                             ->get();
                 $string_tanggal = '';
@@ -115,13 +116,13 @@ class ApiController extends Controller
                                     ->get();
                     $string_tanggal .= $v->tanggal_absensi.',';
                     $array_absen[date('d F Y',strtotime($v->tanggal_absensi))] = $absen;
-                    $array_tahun_detail_absensi[$k] = date('Y-m-d',strtotime($v->created_at));
+                    $array_tanggal_absensi[$k] = date('d/m',strtotime($v->tanggal_absensi));
                 }
                 
                 array_push($array,[
                     'id' => $value->id,
                     'nama_santri' => $value->nama_santri,
-                    'status' => $array_absen,
+                    'status' => isset($array_absen) ? $array_absen : null,
                     'tanggal_absensi' => $string_tanggal,
                 ]);
             }
@@ -135,8 +136,22 @@ class ApiController extends Controller
         return response()->json([
             'data' => $array,
             'jadwal' => $array_detail,
-            'tahun_absensi' => $array_tahun_detail_absensi,
+            'tanggal_absensi' => isset($array_tanggal_absensi) ? $array_tanggal_absensi : null,
         ]);
+    }
+
+
+    public function tahunAbsensi($kelas) 
+    {
+        $detailabsen = DetailAbsensi::where('id_kelas',$kelas)
+                                    ->orderBy('tanggal_absensi','asc')
+                                    ->get();
+
+        foreach ($detailabsen as $key => $value) {
+            $array_tahun_detail_absensi[$key] = date('Y-m-d',strtotime($value->created_at));
+        }
+
+        return response()->json($array_tahun_detail_absensi);
     }
 
     public function alasanSantri(Request $request)

@@ -115,6 +115,7 @@ class ApiController extends Controller
                                     ->get();
                     $string_tanggal .= $v->tanggal_absensi.',';
                     $array_absen[date('d F Y',strtotime($v->tanggal_absensi))] = $absen;
+                    $array_tahun_detail_absensi[$k] = $v->created_at;
                 }
                 
                 array_push($array,[
@@ -134,6 +135,7 @@ class ApiController extends Controller
         return response()->json([
             'data' => $array,
             'jadwal' => $array_detail,
+            'tahun_absensi' => $array_tahun_detail_absensi,
         ]);
     }
 

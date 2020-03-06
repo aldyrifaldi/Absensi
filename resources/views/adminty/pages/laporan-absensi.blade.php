@@ -36,6 +36,40 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
+                        <div class="col-md-2">
+                            <ul class="list-unstyled card-option">
+                                <li>
+                                    <div class="form-group">
+                                        <select onchange="tahun()" class="js-states form-control d-none @error('id_tahun') is-invalid @enderror" name="" id="option_tahun">
+                                            <option selected disabled value=" ">== PILIH TAHUN ==</option>
+                                        </select>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-2">
+                            <ul class="list-unstyled card-option">
+                                <li>
+                                    <div class="form-group">
+                                        <select onchange="bulan()" class="js-states form-control d-none @error('id_bulan') is-invalid @enderror" name="" id="option_bulan">
+                                            <option selected disabled value=" ">== PILIH BULAN ==</option>
+                                        </select>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mr-auto"></div>
+                        <div class="col-md-2">
+                            <ul class="list-unstyled card-option">
+                                <li>
+                                    <div class="form-group">
+                                        <input type="text" placeholder="Cari santri" name="cari_santri" id="cari_santri" class="form-control d-none">
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md d-none" id="table-absensi">
                             <div class="table-responsive">
                                 <table class="table table-bordered table-hover table-striped">
@@ -106,8 +140,13 @@
 
         function kelas(){
             var kelas = $('#id_kelas').val();
+
+            $('#option_tahun').removeClass('d-none');
+            $('#option_bulan').removeClass('d-none');
+            $('#cari_santri').removeClass('d-none');
             $('#tidak-ada').addClass('d-none');
             $('#daftar_santri').html(' ');
+            $('#bulan_absensi_santri').html(' ');
             $('#tanggal_absensi_santri').html(' ');
 
             axios({
@@ -122,10 +161,6 @@
                     $('#table-absensi').addClass('d-none');
                 }
                 else {
-
-
-                
-
 
                     var no = 1;
 
@@ -173,6 +208,12 @@
 
                     var hasil = ''
                     $('#table-absensi').removeClass('d-none');
+
+                    $.each(string_month,function(q,u){
+                        $('#option_bulan').append(`
+                            <option value="${u}">${u}</option>
+                        `)
+                    })
                     
                     var tanggal_perbulan = [];
                     var string_tanggal_perbulan = [];
@@ -191,7 +232,7 @@
                             var tanggal_baru = mulai_hari.setDate(mulai_hari.getDate() + 1);
                             mulai_hari = new Date(tanggal_baru);
                         }
-
+                        
                         tanggal_perbulan.push(day);
                         string_tanggal_perbulan.push(string_day);
 
@@ -199,6 +240,7 @@
 
                     var no = 0;
                     $.each(string_tanggal_perbulan,function(r,w){
+                        
                         Array.prototype.diff = function(arr2) {
                             var ret = [];
                             this.sort();
@@ -212,6 +254,7 @@
                         };
 
                         var colspan = w.diff(response.data.jadwal);
+                        console.log(colspan.length);
                         var daftar_bulan = moment().startOf('year');
                         daftar_bulan = moment(daftar_bulan._d).format('MM-DD-YYYY');
                         var daftar_bulan = new Date(daftar_bulan);
@@ -219,7 +262,7 @@
                         //tinggal di increment agar bisa mulai dari januari sampai dengan desember 
                         var bulan_tambah = daftar_bulan.setMonth(daftar_bulan.getMonth() + no++);
                         var bulan_plus = new Date(bulan_tambah);
-
+                        
                         $('#bulan_absensi_santri').append(`
                             <th class="text-center" colspan="${colspan.length}">${moment(bulan_plus).format('MMMM')}</th>
                         `)
@@ -227,7 +270,6 @@
 
 
                     $.each(tanggal_perbulan,function(h,bulan){
-                        
                         
                         $.each(bulan,function(t,tanggal){
                             var string_tanggal = moment(tanggal).format('dddd').toString();

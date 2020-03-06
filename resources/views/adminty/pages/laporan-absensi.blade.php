@@ -41,7 +41,7 @@
                                 <li>
                                     <div class="form-group">
                                         <select onchange="tahun()" class="js-states form-control d-none @error('id_tahun') is-invalid @enderror" name="" id="option_tahun">
-                                            <option selected disabled value=" ">== PILIH TAHUN ==</option>
+                                            
                                         </select>
                                     </div>
                                 </li>
@@ -52,7 +52,6 @@
                                 <li>
                                     <div class="form-group">
                                         <select onchange="bulan()" class="js-states form-control d-none @error('id_bulan') is-invalid @enderror" name="" id="option_bulan">
-                                            <option selected disabled value=" ">== PILIH BULAN ==</option>
                                         </select>
                                     </div>
                                 </li>
@@ -173,7 +172,11 @@
             }
 
             var hasil = ''
-
+            
+            $('#option_bulan').html('')
+            $('#option_bulan').append(`
+                <option selected disabled value=" ">== PILIH BULAN ==</option>
+            `)
             $.each(string_month,function(q,u){
                 $('#option_bulan').append(`
                     <option value="${u}">${moment(u).format('MMMM')}</option>
@@ -239,7 +242,14 @@
 
         function kelas(){
             var kelas = $('#id_kelas').val();
-            $('#pilih-tahun').removeClass('d-none');
+            $('#option_bulan').val(" ");
+            // $('#pilih-tahun').hide)
+            if ($('#option_tahun').val() === null) {
+                console.log('asas');
+                $('#pilih-tahun').removeClass('d-none');
+            }else{
+                $('#pilih-tahun').hide();
+            }
             $('#option_tahun').removeClass('d-none');
             $('#cari_santri').removeClass('d-none');
             $('#tidak-ada').addClass('d-none');
@@ -260,7 +270,10 @@
                 else {
 
                     //get list year in absensi
-                        
+                    $('#option_tahun').html(' ')
+                    $('#option_tahun').append(`
+                        <option selected disabled value=" ">== PILIH TAHUN ==</option>
+                    `)
                     var startYear = moment(response.data[0]).startOf('year');
                     var tahun_absensi = response.data;
                     var endYear = moment(tahun_absensi[tahun_absensi.length - 1]).endOf('year');

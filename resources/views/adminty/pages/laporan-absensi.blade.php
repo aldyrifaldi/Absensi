@@ -189,7 +189,26 @@
                     })
 
 
-                      //get full date in one year
+                    //get list year in absensi
+                    
+                    var startYear = moment(response.data.tahun_absensi[0]).startOf('year');
+                    var tahun_absensi = response.data.tahun_absensi;
+                    var endYear = moment(tahun_absensi[tahun_absensi.length - 1]).endOf('year');
+                    var array_year = [];
+                    startYear = moment(startYear._d).format('YYYY');
+                    endYear = moment(endYear._d).format('YYYY');
+                    var start = new Date(startYear);
+                    var end = new Date(endYear);
+                    while (start <= end) {
+                        $('#option_tahun').append(`
+                            <option value="${moment(start).format('YYYY')}">${moment(start).format('YYYY')}</option>
+                        `)
+                        var newYear = start.setYear(start.getFullYear() + 1);
+                        start = new Date(newYear);
+                    }
+                    
+
+                    //get full date in one year
 
                     var startMonth = moment().startOf('year');
                     var endMonth = moment().endOf('year');

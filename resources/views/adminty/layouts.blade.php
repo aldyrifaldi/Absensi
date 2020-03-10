@@ -18,6 +18,17 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\css\style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\css\jquery.mCustomScrollbar.css') }}">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.9/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <style>
+        .swal2-icon.swal2-warning {
+            font-size: 20px !important;
+        }
+        .swal2-icon.swal2-question {
+            font-size: 20px !important;
+        }
+    
+    </style>
 </head>
 
 <body>
@@ -254,6 +265,8 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
     @include('sweetalert::alert', ['cdn' => "https://cdn.jsdelivr.net/npm/sweetalert2@9"])
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill"></script>
     
     @stack('script')
     <script>
@@ -261,7 +274,7 @@
         $(document).ready(function() {
             moment().format();
             
-            $('.datatable').DataTable();
+            // $('.datatable').DataTable();
 
              // update absensi
             axios({
@@ -282,10 +295,20 @@
                     var n = weekday[d.getDay()];
                     
                     $.each(response.data,function(index,item){
-                        if (item.nama_hari[n] === n) {
-                            buatAbsensi(item.id_kelas)
-                        }
-                        else {
+                        if (moment('2222-12-12').format('YYYY-MM-DD') >= item.tanggal_mulai) {
+                            var array_tanggal = [];
+                            $.each(item.kegiatan,function(i,y){
+                                var tanggal_interval = [];
+                                var start = new Date(y.tanggal_mulai);
+                                var finish = new Date(y.tanggal_berakhir);
+                                while(start <= finish) {
+                                    tanggal_interval.push(moment(start).format('YYYY-MM-DD'));
+                                    var tanggal_baru = start.setDate(start.getDate() + 1);
+                                    start = new Date(tanggal_baru);
+                                }
+                                array_tanggal.push(tanggal_interval.length != 0 ? tanggal_interval : null);
+                            })
+                            console.log(array_tanggal);
                         }
                     })
             }).catch((err) => {
@@ -305,8 +328,9 @@
                 }
             })
             .then((response) => {
+                console.log(response);
             }).catch((err) => {
-                
+                console.log(err);
             });
         }
     </script>

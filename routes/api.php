@@ -28,3 +28,6 @@ Route::get('data-absen-santri/{kelas}/{tanggal}', 'ApiController@dataAbsenSantri
 Route::get('data-absensi/{kelas}/{tahun}/{bulan}', 'ApiController@dataAbsensi');
 Route::get('tahun-absensi/{kelas}', 'ApiController@tahunAbsensi');
 Route::post('alasan/store', 'ApiController@alasanSantri');
+
+Route::resource('kegiatan', 'KegiatanController');
+Route::resource('pengaturan-absensi', 'PengaturanAbsensiController');

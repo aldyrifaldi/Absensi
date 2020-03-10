@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\JadwalAbsensi;
 use App\Kelas;
 use App\DetailAbsensi;
+use App\PengaturanAbsensi;
 use App\Absen;
+use App\Kegiatan;
 use App\Santri;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
@@ -44,7 +46,8 @@ class ApiController extends Controller
         foreach ($kelas as $key => $value) {
             $explode[$value->nama_kelas] = explode(',',$value->nama_hari);
             $akhir = [];
-
+            $tanggal_mulai = PengaturanAbsensi::select('tanggal_mulai')->where('id_kelas',$value->id_kelas)->first();
+            $kegiatan = Kegiatan::select('tanggal_mulai','tanggal_berakhir','kegiatan')->where('id_kelas',$value->id_kelas)->get();
             if (count($explode[$value->nama_kelas]) != 0) {
                 foreach ($explode[$value->nama_kelas] as $k => $example) {
                     $hasil[$value->nama_kelas][$example] = $example;
@@ -57,7 +60,9 @@ class ApiController extends Controller
                 'nama_kelas' => $value->nama_kelas,
                 'id_kelas' => $value->id_kelas,
                 'id_jadwal' => $value->id_jadwal,
-                'nama_hari' => $hasil[$value->nama_kelas]
+                'nama_hari' => $hasil[$value->nama_kelas],
+                'tanggal_mulai' => isset($tanggal_mulai->tanggal_mulai) ? $tanggal_mulai->tanggal_mulai : null,
+                'kegiatan' => $kegiatan,
             ]);
         }
 

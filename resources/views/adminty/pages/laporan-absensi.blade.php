@@ -58,7 +58,7 @@
                             </ul>
                         </div>
                         <div class="mr-auto"></div>
-                        <div class="col-md-2">
+                        <div class="col-md-2 d-none" id="col-cari-santri">
                             <ul class="list-unstyled card-option">
                                 <li>
                                     <div class="form-group">
@@ -122,8 +122,7 @@
 @endsection
 
 @push('script')
-    <script>
-
+    <script type="text/javascript">
 
         $(document).ready(function(){
 
@@ -149,6 +148,7 @@
 
 
         function tahun() {
+            $('#santri-tidak-ada').addClass('d-none');
             $('#pilih-tahun').removeClass('d-none');
             $('#pilih-tahun').addClass('d-none');
             $('#pilih-bulan').removeClass('d-none');
@@ -188,6 +188,8 @@
 
 
         function bulan(){
+
+            $('#col-cari-santri').removeClass('d-none');
             $('#pilih-bulan').removeClass('d-none');
             $('#pilih-bulan').addClass('d-none');
             $('#table-absensi').removeClass('d-none');
@@ -209,8 +211,14 @@
                             <th>${tanggal}</th>
                         `);
                 })
-
-
+                if (response.data.data.length == 0){
+                    $('#col-cari-santri').addClass('d-none');
+                    $('#santri-tidak-ada').removeClass('d-none');
+                    $('#table-absensi').addClass('d-none');
+                }
+                else {
+                    $('#santri-tidak-ada').addClass('d-none');
+                }
                 $.each(response.data.data,function(index,item){
 
                     $('#daftar_santri').append(`
@@ -241,7 +249,9 @@
 
         $("#cari_santri").keyup(function () {
             //split the current value of searchInput
-            var data = this.value.split(" ");
+            var value = this.value;
+            value = value.charAt(0).toUpperCase() + value.slice(1);
+            var data = value.split(" ");
             //create a jquery object of the rows
             var jo = $("#daftar_santri").find("tr");
             if (this.value == "") {
@@ -274,6 +284,7 @@
         });
 
         function kelas(){
+            $('#col-cari-santri').addClass('d-none');
             var kelas = $('#id_kelas').val();
             $('#option_bulan').val(" ");
             // $('#pilih-tahun').hide)

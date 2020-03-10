@@ -50,6 +50,7 @@ class AdminController extends Controller
                 ],
                 'pengaturan-absensi' => [
                     'pages' => $pages,
+                    'kelas' => Kelas::get(),
                 ],
                 'laporan-absensi' => [
                     'pages' => $pages,

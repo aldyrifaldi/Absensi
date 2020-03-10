@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class DetailAbsensi extends Migration
+class Kegiatan extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,12 @@ class DetailAbsensi extends Migration
      */
     public function up()
     {
-        Schema::create('detail_absensi', function (Blueprint $table) {
+        Schema::create('kegiatan', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('no_detail_absensi');
-            $table->date('tanggal_absensi');
+            $table->string('kegiatan');
             $table->integer('id_kelas');
+            $table->date('tanggal_mulai');
+            $table->date('tanggal_berakhir');
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ class DetailAbsensi extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('detail_absensi');
+        Schema::dropIfExists('kegiatan');
     }
 }

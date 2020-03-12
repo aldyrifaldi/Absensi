@@ -293,10 +293,9 @@
                     weekday[6] = "Saturday";
 
                     var n = weekday[d.getDay()];
-                    
                     $.each(response.data,function(index,item){
-                        if (moment('2222-12-12').format('YYYY-MM-DD') >= item.tanggal_mulai) {
-                            var array_tanggal = [];
+                        if (item.tanggal_mulai >= item.tanggal_mulai) {
+                            var string_tanggal = '';
                             $.each(item.kegiatan,function(i,y){
                                 var tanggal_interval = [];
                                 var start = new Date(y.tanggal_mulai);
@@ -306,9 +305,18 @@
                                     var tanggal_baru = start.setDate(start.getDate() + 1);
                                     start = new Date(tanggal_baru);
                                 }
-                                array_tanggal.push(tanggal_interval.length != 0 ? tanggal_interval : null);
+                                string_tanggal += tanggal_interval.length != 0 ? tanggal_interval : null;
                             })
-                            console.log(array_tanggal);
+                            var concat_tanggal = [];
+                            var array_tanggal = string_tanggal.split(',');
+                            if (array_tanggal != '') {
+                                var tanggal = moment().format('YYYY-MM-DD');
+                                if (array_tanggal.find(Element => Element == tanggal) != undefined) {    
+                                    buatAbsensi(item.id_kelas);
+                                }
+                            }
+                            else {
+                            }
                         }
                     })
             }).catch((err) => {
@@ -328,9 +336,7 @@
                 }
             })
             .then((response) => {
-                console.log(response);
             }).catch((err) => {
-                console.log(err);
             });
         }
     </script>

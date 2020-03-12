@@ -294,7 +294,7 @@
 
                     var n = weekday[d.getDay()];
                     $.each(response.data,function(index,item){
-                        if (item.tanggal_mulai >= item.tanggal_mulai) {
+                        if (moment().format('YYYY-MM-DD') >= item.tanggal_mulai) {
                             var string_tanggal = '';
                             $.each(item.kegiatan,function(i,y){
                                 var tanggal_interval = [];

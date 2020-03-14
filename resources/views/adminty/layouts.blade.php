@@ -311,8 +311,10 @@
                             var array_tanggal = string_tanggal.split(',');
                             if (array_tanggal != '') {
                                 var tanggal = moment().format('YYYY-MM-DD');
-                                if (array_tanggal.find(Element => Element == tanggal) != undefined) {    
-                                    buatAbsensi(item.id_kelas);
+                                if (array_tanggal.find(Element => Element == tanggal) != undefined) {
+                                    if (item.nama_hari.find(Element => Element == n) != undefined) {
+                                        buatAbsensi(item.id_kelas);
+                                    }
                                 }
                             }
                             else {

@@ -214,7 +214,7 @@
                 url: '{{url("api/kelas")}}',
             })
             .then(response => {
-
+                console.log(response.data);
                 var hasil = ''
                 $('#tanggal_absensi').append(` <option selected disabled value=" ">== PILIH TANGGAL ABSENSI ==</option>`)
 

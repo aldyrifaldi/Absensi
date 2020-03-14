@@ -51,6 +51,7 @@ class ApiController extends Controller
             if (count($explode[$value->nama_kelas]) != 0) {
                 foreach ($explode[$value->nama_kelas] as $k => $example) {
                     $hasil[$value->nama_kelas][$example] = $example;
+                    $daftar_hari[$value->nama_kelas][$k] = $example;
                 }
             }
             else {
@@ -61,6 +62,7 @@ class ApiController extends Controller
                 'id_kelas' => $value->id_kelas,
                 'id_jadwal' => $value->id_jadwal,
                 'nama_hari' => $hasil[$value->nama_kelas],
+                'daftar_hari' => $daftar_hari[$value->nama_kelas],
                 'tanggal_mulai' => isset($tanggal_mulai->tanggal_mulai) ? $tanggal_mulai->tanggal_mulai : null,
                 'kegiatan' => $kegiatan,
             ]);

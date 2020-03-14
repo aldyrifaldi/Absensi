@@ -272,75 +272,72 @@
     <script>
         
         $(document).ready(function() {
-            moment().format();
-            
-            // $('.datatable').DataTable();
 
-             // update absensi
+// update absensi
             axios({
-                method: 'get',
-                url: '{{url("api/jadwal-absensi")}}',
+            method: 'get',
+            url: '{{url("api/jadwal-absensi")}}',
             })
             .then((response) => {
-                    var d = new Date();
-                    var weekday = new Array(7);
-                    weekday[0] = "Sunday";
-                    weekday[1] = "Monday";
-                    weekday[2] = "Tuesday";
-                    weekday[3] = "Wednesday";
-                    weekday[4] = "Thursday";
-                    weekday[5] = "Friday";
-                    weekday[6] = "Saturday";
+                var d = new Date();
+                var weekday = new Array(7);
+                weekday[0] = "Sunday";
+                weekday[1] = "Monday";
+                weekday[2] = "Tuesday";
+                weekday[3] = "Wednesday";
+                weekday[4] = "Thursday";
+                weekday[5] = "Friday";
+                weekday[6] = "Saturday";
 
-                    var n = weekday[d.getDay()];
-                    $.each(response.data,function(index,item){
-                        if (moment().format('YYYY-MM-DD') >= item.tanggal_mulai) {
-                            var string_tanggal = '';
-                            $.each(item.kegiatan,function(i,y){
-                                var tanggal_interval = [];
-                                var start = new Date(y.tanggal_mulai);
-                                var finish = new Date(y.tanggal_berakhir);
-                                while(start <= finish) {
-                                    tanggal_interval.push(moment(start).format('YYYY-MM-DD'));
-                                    var tanggal_baru = start.setDate(start.getDate() + 1);
-                                    start = new Date(tanggal_baru);
-                                }
-                                string_tanggal += tanggal_interval.length != 0 ? tanggal_interval : null;
-                            })
-                            var concat_tanggal = [];
-                            var array_tanggal = string_tanggal.split(',');
-                            if (array_tanggal != '') {
-                                var tanggal = moment().format('YYYY-MM-DD');
-                                if (array_tanggal.find(Element => Element == tanggal) != undefined) {
-                                    if (item.nama_hari.find(Element => Element == n) != undefined) {
-                                        buatAbsensi(item.id_kelas);
-                                    }
-                                }
+                var n = weekday[d.getDay()];
+                $.each(response.data,function(index,item){
+                    if (moment().format('YYYY-MM-DD') >= item.tanggal_mulai) {
+                        var string_tanggal = '';
+                        $.each(item.kegiatan,function(i,y){
+                            var tanggal_interval = [];
+                            var start = new Date(y.tanggal_mulai);
+                            var finish = new Date(y.tanggal_berakhir);
+                            while(start <= finish) {
+                                tanggal_interval.push(moment(start).format('YYYY-MM-DD'));
+                                var tanggal_baru = start.setDate(start.getDate() + 1);
+                                start = new Date(tanggal_baru);
                             }
-                            else {
+                            string_tanggal += tanggal_interval.length != 0 ? tanggal_interval : null;
+                        })
+                        var concat_tanggal = [];
+                        var array_tanggal = string_tanggal.split(',');
+                        if (array_tanggal != '') {
+                            var tanggal = moment().format('YYYY-MM-DD');
+                            if (array_tanggal.find(Element => Element == tanggal) == undefined) {
+                                if (item.daftar_hari.find(Element => Element == n) != undefined) {
+                                    buatAbsensi(item.id_kelas);
+                                }
                             }
                         }
-                    })
+                        else {
+                        }
+                    }
+                })
             }).catch((err) => {
-                
+            
             });
 
 
-        } );
+            } );
 
-        function buatAbsensi(id_kelas){
+            function buatAbsensi(id_kelas){
             var id_kelas = id_kelas;
             axios({
-                method: 'post',
-                url: '{{url("api/detail-absensi")}}',
-                data: {
-                    id_kelas: id_kelas,
-                }
+            method: 'post',
+            url: '{{url("api/detail-absensi")}}',
+            data: {
+                id_kelas: id_kelas,
+            }
             })
             .then((response) => {
             }).catch((err) => {
             });
-        }
+}
     </script>
 </body>
 

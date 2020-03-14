@@ -11,7 +11,7 @@ class KegiatanController extends Controller
 {
     public function index() 
     {
-        $pengaturan = Kegiatan::select('*','kelas.id as id_kelas','kegiatan.id as id')->join('kelas','kelas.id','=','kegiatan.id_kelas')->get();
+        $pengaturan = Kegiatan::select('*','Kelas.id as id_kelas','kegiatan.id as id')->join('Kelas','Kelas.id','=','kegiatan.id_kelas')->get();
         $no = 1;
         foreach ($pengaturan as $key => $value) {
             $menu = '   

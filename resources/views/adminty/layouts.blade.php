@@ -302,7 +302,7 @@
                                 var tanggal_baru = start.setDate(start.getDate() + 1);
                                 start = new Date(tanggal_baru);
                             }
-                            string_tanggal += tanggal_interval.length != 0 ? tanggal_interval : null;
+                            string_tanggal += tanggal_interval.length != 0 ? ','+tanggal_interval : null;
                         })
                         var concat_tanggal = [];
                         var array_tanggal = string_tanggal.split(',');

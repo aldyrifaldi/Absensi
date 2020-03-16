@@ -306,7 +306,7 @@
                         })
                         var concat_tanggal = [];
                         var array_tanggal = string_tanggal.split(',');
-                        if (array_tanggal != '') {
+                        if (array_tanggal != ['']) {
                             var tanggal = moment().format('YYYY-MM-DD');
                             if (array_tanggal.find(Element => Element == tanggal) == undefined) {
                                 if (item.daftar_hari.find(Element => Element == n) != undefined) {
